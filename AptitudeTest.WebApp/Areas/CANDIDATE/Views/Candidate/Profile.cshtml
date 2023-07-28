@@ -1,0 +1,48 @@
+﻿@model AptitudeTest.WebApp.Models.User
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<h1>Your profile</h1>
+
+@if (TempData["Success"] != null)
+{
+    <h2 class="text-success">@TempData["Success"]</h2>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Password)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+       
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => @Model.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => @Model.Password)
+                </td>
+                <td>
+                    <a asp-area="CANDIDATE"
+                   asp-controller="Candidate"
+                   asp-action="UpdateProfile"
+                   asp-route-id="@Model.Id">Update</a>
+                </td>
+            </tr>
+        
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Index">Back to Home</a>
+</div>

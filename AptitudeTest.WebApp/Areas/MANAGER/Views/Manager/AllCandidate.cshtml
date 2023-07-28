@@ -1,0 +1,88 @@
+﻿@model IEnumerable<AptitudeTest.WebApp.Models.User>
+
+@{
+    ViewData["Title"] = "AllCandidate";
+}
+
+<h1>All Candidate</h1>
+
+<p>
+    <a asp-action="CreateCandidate">Create New Candidate</a>
+</p>
+
+@if (TempData["Success"] != null)
+{
+    <h2 class="text-success">@TempData["Success"]</h2>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Password)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Role)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Password)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Role)
+                </td>
+                <td>
+                    @if(item.IsActive == true)
+                    {
+                        <span>Online</span>
+                    }
+                    else
+                    {
+                        <span>Waiting...</span>
+                    }
+                </td>
+                <td>
+                   <a asp-area="MANAGER" 
+                      asp-controller="Manager" 
+                      asp-action="UpdateCandidate" 
+                      asp-route-id="@item.Id">Update</a> |
+
+                   <a asp-area="MANAGER"
+                    asp-controller="Manager"
+                    asp-action="DeleteCandidate"
+                    asp-route-id="@item.Id">Delete</a> |
+
+                    <a asp-area="MANAGER"
+                       asp-controller="Manager"
+                       asp-action="VerifyCandidate"
+                       asp-route-id="@item.Id">Verify</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Dashboard">Back to Dashboard</a>
+</div>

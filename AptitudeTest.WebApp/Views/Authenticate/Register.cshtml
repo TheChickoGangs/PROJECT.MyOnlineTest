@@ -1,0 +1,119 @@
+﻿@model AptitudeTest.WebApp.ViewModels.RegisterViewModel
+@using System.Web
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registration Page</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link asp-append-version="true" rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css">
+    <link asp-append-version="true" rel="stylesheet" href="~/lib/icheck-bootstrap/icheck-bootstrap.min.css">
+    <link asp-append-version="true" rel="stylesheet" href="~/css/adminlte.min.css">
+
+    <link href="~/css/site.css" rel="stylesheet" />
+    <link href="~/js/jqueryconfirm/css/jquery-confirm.css" rel="stylesheet" />
+</head>
+<body class="hold-transition register-page">
+   
+
+
+    <div><h1 class="font-weight-bold">Welcome to the Aptitude Test</h1></div>
+    <div class="register-box">
+        <div class="card">
+
+            <div class="card-body register-card-body">
+                <h5 class="login-box-msg font-weight-bold">Register a new candidate</h5>
+
+                <form id="account" asp-controller="Authenticate" asp-action="Register" method="post">
+
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" autocomplete="new-password" asp-for="FirstName" placeholder="FirstName">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" autocomplete="new-password" asp-for="LastName" placeholder="LastName">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" autocomplete="new-password" asp-for="Email" placeholder="Email">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <span class="text-danger">@Html.ValidationMessage("EmailExistErr")</span>
+
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" autocomplete="new-password" asp-for="PhoneNumber" placeholder="PhoneNumber">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    <span class="text-danger">@Html.ValidationMessage("PhoneExistErr")</span>
+
+                    <div class="input-group mb-3">
+                        <input class="form-control" autocomplete="new-password" asp-for="BirthDay" placeholder="BirthDay">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="BirthDay" class="text-danger"></span>
+
+                    <div class="row justify-content-center">
+                        <div class="col-4">
+                            <button type="submit" id="btnsubmit" class="btn btn-primary btn-block">Register</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="text-center">
+                    <a asp-controller="Authenticate" class="text-black-50" asp-action="Login">I already have an account</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+</body>
+</html>
+<script asp-append-version="true" src="~/lib/jquery/jquery.min.js"></script>
+<script asp-append-version="true" src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script asp-append-version="true" src="~/js/adminlte.min.js"></script>
+
+<script asp-append-version="true" src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script asp-append-version="true" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script asp-append-version="true" src="~/js/jquery.unobtrusive-ajax.js"></script>
+
+
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+<script src="~/js/jqueryconfirm/js/jquery-confirm.js"></script>
+

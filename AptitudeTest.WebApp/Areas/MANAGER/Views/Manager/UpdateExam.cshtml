@@ -34,6 +34,12 @@
             </div>
 
             <div class="form-group">
+                <label asp-for="TakeRandomCount" class="control-label"></label>
+                <input asp-for="TakeRandomCount" class="form-control" />
+                <span asp-validation-for="TakeRandomCount" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
                 <input type="submit" value="UPDATE" class="btn btn-primary" />
             </div>
         </form>

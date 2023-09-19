@@ -2,6 +2,7 @@
 {
     public class AttendExamViewModel
     {
+        public string UserName { get; set; }
         public int CandidateId { get; set; }
 
         public int ExamId { get; set; }
@@ -12,5 +13,6 @@
         public List<QnAViewModel> QnAs { get; set; }
 
         public string Message { get; set; }
+
     }
 }

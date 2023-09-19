@@ -34,6 +34,9 @@ namespace AptitudeTest.WebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TakeRandomCount")
+                        .HasColumnType("int");
+
                     b.Property<int>("Time")
                         .HasColumnType("int");
 
@@ -188,8 +191,16 @@ namespace AptitudeTest.WebApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("BirthDay")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CoverLetter")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -199,10 +210,17 @@ namespace AptitudeTest.WebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OTP")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -214,7 +232,18 @@ namespace AptitudeTest.WebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ProfilePicture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResumeFile")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<int>("School")
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")

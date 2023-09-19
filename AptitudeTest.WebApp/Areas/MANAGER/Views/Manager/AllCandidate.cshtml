@@ -25,7 +25,13 @@
                 @Html.DisplayNameFor(model => model.UserName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Password)
+                FullName
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BirthDay)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Role)
@@ -41,13 +47,19 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Email)
+                    <a asp-action="DetailCandidate" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Email)</a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.UserName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Password)
+                    @item.FirstName @item.LastName
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                </td>
+                <td>
+                    @item.BirthDay.Day/@item.BirthDay.Month/@item.BirthDay.Year
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Role)
@@ -55,11 +67,11 @@
                 <td>
                     @if(item.IsActive == true)
                     {
-                        <span>Online</span>
+                        <span style="color:forestgreen;">Online</span>
                     }
                     else
                     {
-                        <span>Waiting...</span>
+                        <span style="color:yellow;">Waiting...</span>
                     }
                 </td>
                 <td>
@@ -71,12 +83,8 @@
                    <a asp-area="MANAGER"
                     asp-controller="Manager"
                     asp-action="DeleteCandidate"
-                    asp-route-id="@item.Id">Delete</a> |
+                    asp-route-id="@item.Id">Delete</a>
 
-                    <a asp-area="MANAGER"
-                       asp-controller="Manager"
-                       asp-action="VerifyCandidate"
-                       asp-route-id="@item.Id">Verify</a>
                 </td>
             </tr>
         }

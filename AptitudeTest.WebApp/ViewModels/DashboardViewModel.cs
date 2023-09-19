@@ -7,5 +7,6 @@ namespace AptitudeTest.WebApp.ViewModels
         public int CandidateCount { get; set; }
         public int ExamCount { get; set; }
         public int QuestionCount { get; set; }
+        public int PassingCount { get; set; }
     }
 }

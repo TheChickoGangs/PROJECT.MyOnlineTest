@@ -7,8 +7,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Identity.Client;
 using MimeKit;
+using MimeKit.Utils;
+using System.Net.Mime;
 
 namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
 {
@@ -40,6 +43,7 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             vm.CandidateCount = _context.Users.Count(u => u.Role == (int)EnumRoles.CANDIDATE);
             vm.ExamCount = _context.Exams.Count();
             vm.QuestionCount = _context.QnAs.Count();
+            vm.PassingCount = _context.PassingResults.Count();
 
             return View(vm);
         }
@@ -49,10 +53,23 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
         //Candidate Management
         public IActionResult AllCandidate()
         {
-            var result = _context.Users.Where(u => u.Role == (int)EnumRoles.CANDIDATE).ToList();
+            var result = _context.Users.Where(u => u.Role == (int)EnumRoles.CANDIDATE).OrderBy(u => u.IsActive).ToList();
             return View(result);
         }
 
+        //Detail Candidate
+        public IActionResult DetailCandidate(int id)
+        {
+            var candidate = _context.Users.FirstOrDefault(u => u.Id == id);
+            var resultOfCandidate = _context.FinalResults.Include(fr => fr.Exam).Where(fr => fr.UserId == id).ToList();
+
+            var vm = new CandidateProfileViewModel(candidate);
+            vm.FinalResultList = resultOfCandidate;
+
+            return View(vm);
+        }
+
+        //Create Candidate
         public IActionResult CreateCandidate()
         {
             return View();
@@ -88,7 +105,7 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             }
         }
 
-
+        //Update Candidate
         public IActionResult UpdateCandidate(int id)
         {
             var result = _context.Users.FirstOrDefault(u => u.Id == id);
@@ -104,6 +121,23 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
         {
             if (ModelState.IsValid)
             {
+                if(model.UserName == null)
+                {
+                    model.UserName = "";
+                } 
+                if(model.Password == null)
+                {
+                    model.Password = "";
+                }
+                if(model.ProfilePicture == null)
+                {
+                    model.ProfilePicture = "";
+                }
+                if(model.ResumeFile == null)
+                {
+                    model.ResumeFile = "";
+                }
+
                 _context.Users.Update(model);
                 _context.SaveChanges();
 
@@ -116,9 +150,19 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             }
         }
 
+
+        //Delete Candidate
         public IActionResult DeleteCandidate(int id)
         {
             var candidate = _context.Users.FirstOrDefault(m => m.Id == id);
+            var examResultByCandidate = _context.ExamResults.Where(er => er.UserId == id);
+            var passingCandidate = _context.PassingResults.Where(pr => pr.UserId == id);
+            var finalResultByCandidate = _context.FinalResults.Where(fr => fr.UserId == id);
+
+            _context.FinalResults.RemoveRange(finalResultByCandidate);
+            _context.PassingResults.RemoveRange(passingCandidate);
+            _context.ExamResults.RemoveRange(examResultByCandidate);
+
             _context.Users.Remove(candidate);
             _context.SaveChanges();
 
@@ -138,10 +182,23 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             candidate.Password = GenerateRandomPassword();
             candidate.IsActive = true;
 
-            var generateMessage = new EmailMessage(new string[] { candidate.Email }, "Verification Message from MANAGER", 
-                $"<div><a href='https://localhost:7150/Authenticate/Login'>Follow this link to Access Login</a><br/><p>UserName: {candidate.UserName}</p><p>Password: {candidate.Password}</p></div>");
 
+            // <!-- Chau Anh
+            string templateFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmailTemplate", "EmailAdminCreateAccount.html"); // Adjust the file path as per your actual location
+            string emailContent;
+            using (StreamReader reader = new StreamReader(templateFilePath))
+            {
+                emailContent = reader.ReadToEnd();
+            }
+          
+            emailContent = emailContent.Replace("{UserName}", candidate.UserName);
+            emailContent = emailContent.Replace("{Password}", candidate.Password);
+            
+
+            var generateMessage = new EmailMessage(new string[] { candidate.Email }, "UserName and Password from Webster", emailContent);
+            
             SendEmail(generateMessage);
+            //  -->
 
             _context.Users.Update(candidate);
             _context.SaveChanges();
@@ -205,10 +262,11 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
         private MimeMessage CreateEmailMessage(EmailMessage generateMessage)
         {
             var mimeMessage = new MimeMessage();
-            mimeMessage.From.Add(new MailboxAddress("email", _emailConfig.From));
+            mimeMessage.From.Add(new MailboxAddress(" Webster@oilgascompany.com", _emailConfig.From));
             mimeMessage.To.AddRange(generateMessage.To);
             mimeMessage.Subject = generateMessage.Subject;
             mimeMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = generateMessage.Content };
+
 
             return mimeMessage;
         }
@@ -242,6 +300,7 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             return View(result);
         }
 
+        //Create Exam
         public IActionResult CreateExam()
         {
             return View();
@@ -270,6 +329,7 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             }
         }
 
+        //Update Exam
         public IActionResult UpdateExam(int id)
         {
             var exam = _context.Exams.FirstOrDefault(e => e.Id == id);
@@ -293,6 +353,7 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             }
         }
 
+        //Delete Exam
         public IActionResult DeleteExam(int id)
         {
             var exam = _context.Exams.Include(e => e.QnAs).FirstOrDefault(e => e.Id == id);
@@ -309,12 +370,40 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             return RedirectToAction(nameof(AllExam));
         }
 
+
         ////////////////
         //QnA Management
         public IActionResult AllQnA()
         {
             var allQnA = _context.QnAs.Include(q => q.Exam).OrderBy(q => q.ExamId).ToList();
             return View(allQnA);
+        }
+
+        [HttpPost]
+        public IActionResult AllQnA(string findByExam = "" , string findByName = "")
+        {
+            if(string.IsNullOrEmpty(findByExam) && string.IsNullOrEmpty(findByName))
+            {
+                var allQnA = _context.QnAs.Include(q => q.Exam).OrderBy(q => q.ExamId).ToList();
+                return View(allQnA);
+            }
+
+            if(string.IsNullOrEmpty(findByExam) && !string.IsNullOrEmpty(findByName))
+            {
+                var allQnAWithCondition = _context.QnAs.Include(q => q.Exam).Where(q => q.Question.ToLower().Trim().Contains(findByName.ToLower().Trim())).ToList();
+                return View(allQnAWithCondition);
+            }
+            else if(!string.IsNullOrEmpty(findByExam) && string.IsNullOrEmpty(findByName))
+            {
+                var allQnAWithCondition = _context.QnAs.Include(q => q.Exam).Where(q => q.ExamId == Convert.ToInt32(findByExam)).ToList();
+                return View(allQnAWithCondition);
+            }
+            else
+            {
+                var allQnAWithCondition = _context.QnAs.Include(q => q.Exam).Where(q => q.Question.ToLower().Trim().Contains(findByName.ToLower().Trim()) 
+                                                                                     && q.ExamId == Convert.ToInt32(findByExam)).ToList();
+                return View(allQnAWithCondition);
+            }
         }
 
         public IActionResult AllQnAByExam(string examTitle)
@@ -326,39 +415,6 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             return View(result);
         }
 
-        //CreateQnA
-        public IActionResult CreateQnA(string examTitle)
-        {
-            var exam = _context.Exams.FirstOrDefault(e => e.Title == examTitle);
-
-            ViewBag.ExamTitle = examTitle;
-            ViewBag.ExamId = exam.Id;
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult CreateQnA(string examTitle, QnA model)
-        {
-            if (ModelState.IsValid)
-            {
-                if (_context.QnAs.Any(q => q.Question == model.Question) == true)
-                {
-                    ModelState.AddModelError("QExistErr", "This Question already Exist");
-                    return View();
-                }
-
-
-                _context.QnAs.Add(model);
-                _context.SaveChanges();
-
-                TempData["Success"] = $"Successfully Created new Question for {examTitle} Exam";
-                return RedirectToAction(nameof(AllQnAByExam), new { examTitle = examTitle });
-            }
-            else
-            {
-                return View(model);
-            }
-        }
 
         //CreateAllQnA
         public IActionResult CreateAllQnA()
@@ -398,33 +454,6 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             }
         }
 
-        //UpdateQnA
-        public IActionResult UpdateQnA(int id)
-        {
-            var qna = _context.QnAs.Include(q => q.Exam).FirstOrDefault(q => q.Id == id);
-            var exam = _context.Exams.FirstOrDefault(e => e.Id == qna.ExamId);
-
-            ViewBag.ExamTitle = exam.Title;
-
-            return View(qna);
-        }
-
-        [HttpPost]
-        public IActionResult UpdateQnA(int id, string examTitle, QnA model)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.QnAs.Update(model);
-                _context.SaveChanges();
-
-                return RedirectToAction(nameof(AllQnAByExam), new { examTitle = examTitle });
-            }
-            else
-            {
-                ViewBag.ExamTitle = examTitle;
-                return View(model);
-            }
-        }
 
         //UpdateAllQnA
         public IActionResult UpdateAllQnA(int id)
@@ -454,6 +483,7 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             }
         }
 
+        //DeleteQnA
         public IActionResult DeleteQnA(int id)
         {
             var qna = _context.QnAs.Include(q => q.Exam).FirstOrDefault(q => q.Id == id);
@@ -469,6 +499,7 @@ namespace AptitudeTest.WebApp.Areas.MANAGER.Controllers
             TempData["Success"] = "Successfully Deleted QnA";
             return RedirectToAction(nameof(AllQnA));
         }
+
 
         //PassingResultDetail
         public IActionResult PassingResult()

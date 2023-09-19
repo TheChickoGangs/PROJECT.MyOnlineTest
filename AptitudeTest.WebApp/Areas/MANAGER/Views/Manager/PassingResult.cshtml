@@ -4,24 +4,21 @@
     ViewData["Title"] = "PassingResult";
 }
 
-<h1>PassingResult</h1>
+<h1>Passing Candidate and Ready for HR</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th style="text-align:center;">
                 @Html.DisplayNameFor(model => model.User.UserName)
             </th>
-            <th>
+            <th style="text-align:center;">
                 @Html.DisplayNameFor(model => model.GeneralKnowledgeResult)
             </th>
-            <th>
+            <th style="text-align:center;">
                 @Html.DisplayNameFor(model => model.MathematicsResult)
             </th>
-            <th>
+            <th style="text-align:center;">
                 @Html.DisplayNameFor(model => model.ComputerTechnologyResult)
             </th>
             <th></th>
@@ -31,22 +28,20 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
+                <td style="text-align:center;">
                     @Html.DisplayFor(modelItem => item.User.UserName)
                 </td>
-                <td>
+                <td style="text-align:center;">
                     @Html.DisplayFor(modelItem => item.GeneralKnowledgeResult)
                 </td>
-                <td>
+                <td style="text-align:center;">
                     @Html.DisplayFor(modelItem => item.MathematicsResult)
                 </td>
-                <td>
+                <td style="text-align:center;">
                     @Html.DisplayFor(modelItem => item.ComputerTechnologyResult)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    <a asp-action="DetailCandidate" asp-route-id="@item.UserId">Detail Candidate</a>
                 </td>
             </tr>
         }

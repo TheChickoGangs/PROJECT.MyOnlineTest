@@ -15,6 +15,19 @@
     <a asp-action="CreateAllQnA">Create New QnA</a>
 </p>
 
+<div>
+    <form method="post" asp-action="AllQnA">
+        <select name="findByExam">
+            <option value="">---Select Exam---</option>
+            <option value="1">General Knowledge</option>
+            <option value="2">Mathematics</option>
+            <option value="3">Computer Technology</option>
+        </select>
+        <input name="findByName" placeholder="Find by Question" />
+        <button type="submit">Find</button>
+    </form>
+</div>
+
 <table class="table">
     <thead>
         <tr>
